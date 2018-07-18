@@ -1,7 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SudokuSolver;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 
 namespace SudokuSolverTests
 {
@@ -22,10 +21,7 @@ namespace SudokuSolverTests
         [TestMethod]
         public void AllSudokusHaveSolutions()
         {
-
         }
-
-
 
         private static StreamReader GetStreamFromFileName(string filename)
         {

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -61,7 +58,7 @@ namespace SudokuSolver
                 for (int j = 0; j < SUDOKU_DIMENSIONS; j++)
                 {
                     if (!matrixesEqual) break;
-                    if(PuzzleMatrix[i][j] != other.PuzzleMatrix[i][j])
+                    if (PuzzleMatrix[i][j] != other.PuzzleMatrix[i][j])
                     {
                         matrixesEqual = false;
                     }

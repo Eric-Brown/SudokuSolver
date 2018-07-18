@@ -1,13 +1,11 @@
-﻿using System;
-using System.IO;
-
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SudokuSolver;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace SudokuSolverTests
 {
-    
     [TestClass]
     public class SudokuFileReaderTester
     {
@@ -20,7 +18,7 @@ namespace SudokuSolverTests
         [TestMethod]
         public void ReadingBadFilesThrowsExceptions()
         {
-            Assert.ThrowsException<FileNotFoundException>(()=>SudokuFileReader.ReadFile(NONEXISTANTFILENAME), 
+            Assert.ThrowsException<FileNotFoundException>(() => SudokuFileReader.ReadFile(NONEXISTANTFILENAME),
                 "Exception expected for bad filename.");
             Assert.ThrowsException<ArgumentException>(() => SudokuFileReader.ReadFile(EMPTYFILENAME),
                 "Exception expected for file that contains no information.");
@@ -38,7 +36,6 @@ namespace SudokuSolverTests
             }
             catch (Exception)
             {
-
                 Assert.Fail("Good files should not throw exceptions.");
             }
         }
