@@ -48,6 +48,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HeaderTesting.cs" />
+    <Compile Include="NodeTesting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SudokuFileReaderTester.cs" />
     <Compile Include="SudokuPuzzleTester.cs" />
