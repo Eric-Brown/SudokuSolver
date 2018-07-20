@@ -14,7 +14,7 @@ namespace SudokuSolverTests
         public void SolutionIsCorrect()
         {
             SudokuPuzzle puzzle = SudokuPuzzle.CreateFromStream(GetStreamFromFileName(GOODSINGLEPUZZLEFILE));
-            SudokuSolverHelper.Solve(puzzle);
+
             Assert.IsTrue(puzzle.IsSolved());
         }
 

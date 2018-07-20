@@ -342,6 +342,10 @@ namespace SudokuSolverTests
             }
             Assert.IsTrue(retrievedHeaders.Count == root.NumLinkedHeaders);
             Assert.IsTrue(solutionActual.Count == solutionNodes.Length);
+            foreach (Node expected in solutionNodes)
+            {
+                Assert.IsTrue(solutionActual.Contains(expected));
+            }
 
         }
 
