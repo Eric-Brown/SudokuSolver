@@ -12,16 +12,16 @@ namespace SudokuSolver
         private static int nextRowID = 0;
         public Node left;
         public Node right;
-        public Node below;
-        public Node above;
+        public Node down;
+        public Node up;
         public ColumnHeader header;
         public readonly int rowID;
 
         public Node()
         {
             rowID = nextRowID++;
-            above = this;
-            below = this;
+            up = this;
+            down = this;
             left = this;
             right = this;
         }
@@ -30,40 +30,75 @@ namespace SudokuSolver
         {
             header = column;
             rowID = nextRowID++;
-            Node last = column.above;
-            column.above = this;
-            above = last;
-            below = column;
-            last.below = this;
+            Node last = column.up;
+            column.up = this;
+            up = last;
+            down = column;
+            last.down = this;
             left = this;
             right = this;
         }
 
 
 
-        public void HideLinkedNodesFromHeader()
+        public void RemoveRow()
         {
+            //For each linked column
             Node linkedNode = right;
             while (!linkedNode.Equals(this))
             {
-                above.below = below;
-                below.above = above;
+                //Remove the row from its list
+                linkedNode.up.down = linkedNode.down;
+                linkedNode.down.up = linkedNode.up;
+                //Adjust the lists size
                 --linkedNode.header.Size;
+                //Go to the next node
                 linkedNode = linkedNode.right;
             }
         }
 
-        public void ShowLinkedNodesToHeader()
+        public void AddRow()
         {
+            //For each column in this row
             Node linkedNode = left;
             while (!linkedNode.Equals(this))
             {
-                above.below = this;
-                below.above = this;
+                //Add the node back to the list
+                linkedNode.up.down = linkedNode;
+                linkedNode.down.up = linkedNode;
+                //Adjust the headers size
                 ++linkedNode.header.Size;
+                //Go to the next node
                 linkedNode = linkedNode.left;
             }
         }
+
+        public List<ColumnHeader> GetLinkedHeaders()
+        {
+            List<ColumnHeader> results = new List<ColumnHeader>();
+            results.Add(header);
+            Node linked = right;
+            while(linked != this)
+            {
+                results.Add(linked.header);
+                linked = linked.right;
+            }
+            return results;
+        }
+
+        public virtual void Select()
+        {
+            //When I am selected, I:
+            // Go through my linked nodes and ask their category to cover themselves
+            Node linked = right;
+            while (linked!= this)
+            {
+                linked.header.Cover();
+                linked = linked.right;
+            }
+        }
+
+
 
         public static void LinkNodes(params Node[] nodes)
         {
@@ -79,6 +114,16 @@ namespace SudokuSolver
         public bool Equals(Node other)
         {
             return other.rowID == rowID;
+        }
+
+        internal void Unselect()
+        {
+            Node linked = left;
+            while (linked!= this)
+            {
+                linked.header.Uncover();
+                linked = linked.left;
+            }
         }
     }
 

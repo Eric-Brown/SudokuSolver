@@ -35,19 +35,18 @@ namespace SudokuSolver
                 size = value;
             }
         }
-
+        private bool isCovered = false;
+        private int numLinked = 0;
         public int NumLinkedHeaders
         {
             get
             {
-                int count = 0;
-                ColumnHeader currHeader = right;
-                while(!currHeader.Equals(this))
+                if (header == this) return numLinked;
+                if (!isCovered)
                 {
-                    ++count;
-                    currHeader = currHeader.right;
+                    return header.numLinked;
                 }
-                return count;
+                else return 0;
             }
         }
 
@@ -62,7 +61,8 @@ namespace SudokuSolver
         public ColumnHeader(ColumnHeader root)
         {
             index = indexNo++;
-            header = this;
+            ++root.numLinked;
+            header = root;
             ColumnHeader last = root.left;
             last.right = this;
             right = root;
@@ -72,36 +72,43 @@ namespace SudokuSolver
 
         public void Hide()
         {
+            --header.numLinked;
             left.right = right;
             right.left = left;
         }
 
         public void Unhide()
         {
+            ++header.numLinked;
             right.left = this;
             left.right = this;
         }
 
         public void Cover()
         {
-            Hide();
-            //For each row below me, remove it from consideration
-            Node currNode = below;
+            isCovered = true;
 
-            while (!currNode.Equals(this))
+            //Remove myself from the header list.
+            Hide();
+            //For each row I own, remove them from other headers lists
+            Node row = down;
+            while (!row.Equals(this))
             {
-                currNode.HideLinkedNodesFromHeader();
-                currNode = currNode.below;
+                row.RemoveRow();
+                row = row.down;
             }
         }
 
         public void Uncover()
         {
-            Node currNode = above;
-            while (!currNode.Equals(this))
+            isCovered = false;
+
+            //For each row I own, add them back to other headers lists
+            Node row = up;
+            while (!row.Equals(this))
             {
-                currNode.ShowLinkedNodesToHeader();
-                currNode = currNode.above;
+                row.AddRow();
+                row = row.up;
             }
             Unhide();
         }
@@ -133,6 +140,11 @@ namespace SudokuSolver
             Stack<Node> result = new Stack<Node>();
             bool isDone = false;
             Search(root, ref result, ref isDone);
+            foreach(var node in result)
+            {
+                node.header.Uncover();
+                node.Unselect();
+            }
             return result;
         }
 
@@ -146,36 +158,18 @@ namespace SudokuSolver
             else
             {
                 ColumnHeader chosenColumn = ChooseColumnHeader(root);
-                Node chosenRow = chosenColumn.below;
-                //for each row in the chosen column
+                Node chosenRow = chosenColumn.down;
+                chosenColumn.Cover();
                 while (!chosenRow.Equals(chosenColumn))
                 {
-                    //add the row to our solution
                     solution.Push(chosenRow);
-                    //for each column our row inhabits
-                    Node nextNode = chosenRow;
-                    do
-                    {
-                        //remove the column and the rows it contains from consideration
-                        nextNode.header.Cover();
-                        //move to the next column
-                        nextNode = nextNode.right;
-                    } while (!nextNode.Equals(chosenRow));
-                    //search here either successful, or our row was wrong
+                    chosenRow.Select();
                     Search(root, ref solution, ref done);
-                    //Pop data object
                     if (done) return;
-                    //remove the row from the solution
                     chosenRow = solution.Pop();
                     chosenColumn = chosenRow.header;
-                    nextNode = chosenRow.left;
-                    //for each column we covered...uncover it
-                    while (!nextNode.Equals(chosenRow))
-                    {
-                        nextNode.header.Uncover();
-                        nextNode = nextNode.left;
-                    }
-                    chosenRow = chosenRow.below;
+                    chosenRow.Unselect();
+                    chosenRow = chosenRow.down;
                 }
                 chosenColumn.Uncover();
                 return;
@@ -186,5 +180,15 @@ namespace SudokuSolver
         {
             return other.index == index;
         }
+
+        // public override void Select()
+        // {
+        //     down.Select();
+        //     Node otherRows = down.down;
+        //     while(otherRows != this)
+        //     {
+        //         otherRows.RemoveRow();
+        //     }
+        // }
     }
 }

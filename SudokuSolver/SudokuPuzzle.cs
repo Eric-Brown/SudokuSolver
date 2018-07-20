@@ -86,7 +86,7 @@ namespace SudokuSolver
             {
                 for (int j = 0; j < BOX_DIMENSIONS; j++)
                 {
-                    strippedBox[i * BOX_DIMENSIONS + j] = PuzzleMatrix[boxNum / BOX_DIMENSIONS + i][boxNum % BOX_DIMENSIONS + j];
+                    strippedBox[i * BOX_DIMENSIONS + j] = PuzzleMatrix[(boxNum / BOX_DIMENSIONS) * BOX_DIMENSIONS + i][(boxNum%BOX_DIMENSIONS)*BOX_DIMENSIONS + j];
                 }
             }
             return StripIsValid(strippedBox);
