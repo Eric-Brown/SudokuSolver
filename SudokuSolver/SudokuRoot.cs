@@ -14,7 +14,7 @@ namespace SudokuSolver
         private const int BOX_DIMENSION = 3;
         private ColumnHeader root;
         private ColumnHeader[] ColumnHeaders;
-        private List<ColumnHeader> clueHeaders = new List<ColumnHeader>();
+        private List<Node> clueHeaders = new List<Node>();
         //Cell Constraints 81 count
         //      Each cell (81 cells) must have only 1 value
         //Row Constraints 81 count
@@ -101,10 +101,13 @@ namespace SudokuSolver
         private void RemoveClues()
         {
             clueHeaders.Reverse();
-            foreach (var clue in clueHeaders)
+            foreach(var clue in clueHeaders)
             {
-                clue.Uncover();
+                ColumnHeader header = clue.header;
+                clue.Unselect();
+                header.Uncover();
             }
+            clueHeaders.Clear();
         }
 
         private void EnterSolution(Stack<Node> solution, SudokuPuzzle puzzle)
@@ -113,10 +116,6 @@ namespace SudokuSolver
             {
                 List<ColumnHeader> rowHeaders = solution.Pop().GetLinkedHeaders();
                 InterpretRow(rowHeaders, puzzle.PuzzleMatrix);
-                foreach (var column in rowHeaders)
-                {
-                    column.Uncover();
-                }
             }
         }
 
@@ -139,20 +138,21 @@ namespace SudokuSolver
                     {
                         ColumnHeader cell = LookUpColumnHeader(HeaderArrayAccess.Cell, i, j);
                         ColumnHeader row = LookUpColumnHeader(HeaderArrayAccess.Row, i, puzzle.PuzzleMatrix[i][j] - 1);
-                        ColumnHeader column = LookUpColumnHeader(HeaderArrayAccess.Column, j, puzzle.PuzzleMatrix[i][j] - 1);
-                        ColumnHeader box = LookUpColumnHeader(HeaderArrayAccess.Box, GetBoxIndex(i, j), puzzle.PuzzleMatrix[i][j] - 1);
-                        AddClues(cell, row, column, box);
+                        AddClues(cell, row);
                     }
                 }
             }
         }
-        private void AddClues(params ColumnHeader[] headers)
+        private void AddClues(ColumnHeader a, ColumnHeader b)
         {
-            for (int i = 0; i < headers.Length; i++)
+            a.Cover();
+            Node currNode = a.down;
+            while (!currNode.GetLinkedHeaders().Contains(b))
             {
-                clueHeaders.Add(headers[i]);
-                headers[i].Cover();
+                currNode = currNode.down;
             }
+            currNode.Select();
+            clueHeaders.Add(currNode);
         }
     }
 }

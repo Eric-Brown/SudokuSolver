@@ -86,6 +86,8 @@ namespace SudokuSolver
 
         public void Cover()
         {
+            //Prevent covering multiple times
+            if (isCovered) return;
             isCovered = true;
 
             //Remove myself from the header list.
@@ -101,6 +103,8 @@ namespace SudokuSolver
 
         public void Uncover()
         {
+            //Prevent from uncovering over and over
+            if (isCovered == false) return;
             isCovered = false;
 
             //For each row I own, add them back to other headers lists
@@ -139,16 +143,16 @@ namespace SudokuSolver
         {
             Stack<Node> result = new Stack<Node>();
             bool isDone = false;
-            Search(root, ref result, ref isDone);
-            foreach(var node in result)
+            Search(root, result, ref isDone);
+            foreach (var node in result)
             {
-                node.header.Uncover();
                 node.Unselect();
+                node.header.Uncover();
             }
             return result;
         }
 
-        private static void Search(ColumnHeader root, ref Stack<Node> solution, ref bool done)
+        private static void Search(ColumnHeader root, Stack<Node> solution, ref bool done)
         {
             if (root.right == root)
             {
@@ -164,9 +168,11 @@ namespace SudokuSolver
                 {
                     solution.Push(chosenRow);
                     chosenRow.Select();
-                    Search(root, ref solution, ref done);
+
+
+                        Search(root, solution, ref done);
                     if (done) return;
-                    chosenRow = solution.Pop();
+                        chosenRow = solution.Pop();
                     chosenColumn = chosenRow.header;
                     chosenRow.Unselect();
                     chosenRow = chosenRow.down;

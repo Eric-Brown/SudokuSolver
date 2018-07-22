@@ -63,8 +63,10 @@ namespace SudokuSolver
             Node linkedNode = left;
             while (!linkedNode.Equals(this))
             {
+                if (linkedNode.up.down == this) continue;
                 //Add the node back to the list
                 linkedNode.up.down = linkedNode;
+                if (linkedNode.down.up == this) continue;
                 linkedNode.down.up = linkedNode;
                 //Adjust the headers size
                 ++linkedNode.header.Size;

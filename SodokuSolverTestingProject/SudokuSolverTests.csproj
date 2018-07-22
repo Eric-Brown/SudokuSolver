@@ -7,7 +7,7 @@
     <ProjectGuid>{5430C7C8-F560-4AC9-A183-296B623F1A43}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SodokuSolverTests</RootNamespace>
+    <RootNamespace>SudokuSolverTests</RootNamespace>
     <AssemblyName>SodokuSolverTests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -57,6 +57,7 @@
     <Compile Include="SudokuPuzzleTester.cs" />
     <Compile Include="SudokuRootTester.cs" />
     <Compile Include="SudokuSolverTester.cs" />
+    <Compile Include="UnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SudokuSolver\SudokuSolver.csproj">

@@ -3,7 +3,7 @@ using System.IO;
 using SudokuSolver;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SodokuSolverTests
+namespace SudokuSolverTests
 {
     [TestClass]
     public class SudokuRootTester
@@ -13,9 +13,12 @@ namespace SodokuSolverTests
 
 
         [TestMethod]
-        public void TestMethod1()
+        public void SolvesSudokus()
         {
             SudokuPuzzle unsolved = SudokuPuzzle.CreateFromStream(GetStreamFromFileName(GOODSINGLEPUZZLEFILE));
+            //One more time!
+            SudokuPuzzle unsolved2 = SudokuPuzzle.CreateFromStream(GetStreamFromFileName(GOODSINGLEPUZZLEFILE));
+
             Assert.IsFalse(unsolved.IsSolved());
             SudokuPuzzle solved = new SudokuPuzzle("Solved1");
             solved.PuzzleMatrix = new int[][]
@@ -32,8 +35,12 @@ namespace SodokuSolverTests
             };
             SudokuRoot totest =  new SudokuRoot();
             totest.SolveSudoku(unsolved);
+            totest.SolveSudoku(unsolved2);
             Assert.IsTrue(unsolved.IsSolved());
+            Assert.IsTrue(unsolved2.IsSolved());
         }
+
+
         private static StreamReader GetStreamFromFileName(string filename)
         {
             return new StreamReader(new BufferedStream(File.OpenRead(filename)));

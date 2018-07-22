@@ -123,7 +123,26 @@ namespace SudokuSolverTests
             headers[0].Uncover();
             Assert.IsTrue(root.NumLinkedHeaders == EXPECTED_LENGTH);
         }
-
+        [TestMethod]
+        public void UncoverRestoresRowsToOtherHeaders()
+        {
+            ColumnHeader root = new ColumnHeader();
+            ColumnHeader[] headers = GetHeaders(root, EXPECTED_LENGTH);
+            CreateAndLinkNodesToRandomHeaders(root, EXPECTED_LENGTH/2);
+            CreateAndLinkNodesToRandomHeaders(root, EXPECTED_LENGTH/2);
+            CreateAndLinkNodesToRandomHeaders(root, EXPECTED_LENGTH/2);
+            CreateAndLinkNodesToRandomHeaders(root, EXPECTED_LENGTH/2);
+            CreateAndLinkNodesToRandomHeaders(root, EXPECTED_LENGTH/2);
+            CreateAndLinkNodesToRandomHeaders(root, EXPECTED_LENGTH / 2);
+            headers[0].Cover();
+            headers[0].Uncover();
+            int sum = 0;
+            for(int i = 0; i < EXPECTED_LENGTH; ++i)
+            {
+                sum+= headers[i].Size;
+            }
+            Assert.IsTrue(sum == EXPECTED_LENGTH * 3);
+        }
         [TestMethod]
         public void CoveringAllHeadersWillLeaveRootLinkingToSelf()
         {
@@ -233,7 +252,7 @@ namespace SudokuSolverTests
             headers[0].Cover();
             int sum = 0;
             ColumnHeader currheader = root.right;
-            while(currheader != root)
+            while (currheader != root)
             {
                 sum += currheader.Size;
                 currheader = currheader.right;
@@ -275,7 +294,7 @@ namespace SudokuSolverTests
                 known[i].Cover();
                 int sum = 0;
                 ColumnHeader temp = root.right;
-                while(temp != root)
+                while (temp != root)
                 {
                     sum += temp.Size;
                     temp = temp.right;
@@ -305,7 +324,7 @@ namespace SudokuSolverTests
             List<int> workingIndex = new List<int>();
             for (int i = 0; i < AvailableHeaderCount; i++)
             {
-                workingIndex.Add(i+1);
+                workingIndex.Add(i + 1);
             }
             Random rand = new Random();
             Node[] toLink = new Node[numToLink];
