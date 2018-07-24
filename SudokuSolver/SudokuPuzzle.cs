@@ -50,21 +50,35 @@ namespace SudokuSolver
             return new SudokuPuzzle(name, matrix);
         }
 
-        public bool Equals(SudokuPuzzle other)
+        public void WriteToStream(TextWriter stream)
         {
-            bool matrixesEqual = true;
+            stream.WriteLine(PuzzleName);
             for (int i = 0; i < SUDOKU_DIMENSIONS; i++)
             {
                 for (int j = 0; j < SUDOKU_DIMENSIONS; j++)
                 {
-                    if (!matrixesEqual) break;
+                    stream.Write($"{PuzzleMatrix[i][j]}");
+                }
+                stream.WriteLine();
+            }
+        }
+
+        public bool Equals(SudokuPuzzle other)
+        {
+            bool isEqual = string.Equals(PuzzleName, other.PuzzleName);
+            for (int i = 0; i < SUDOKU_DIMENSIONS; i++)
+            {
+                if (!isEqual) break;
+                for (int j = 0; j < SUDOKU_DIMENSIONS; j++)
+                {
+                    if (!isEqual) break;
                     if (PuzzleMatrix[i][j] != other.PuzzleMatrix[i][j])
                     {
-                        matrixesEqual = false;
+                        isEqual = false;
                     }
                 }
             }
-            return string.Equals(PuzzleName, other.PuzzleName) && matrixesEqual;
+            return isEqual;
         }
 
         public bool IsSolved()

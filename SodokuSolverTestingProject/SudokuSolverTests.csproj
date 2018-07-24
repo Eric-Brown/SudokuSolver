@@ -50,14 +50,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HeaderRootTester.cs" />
     <Compile Include="HeaderTesting.cs" />
+    <Compile Include="MockHeaderRoot.cs" />
     <Compile Include="NodeTesting.cs" />
+    <Compile Include="ProgramTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SudokuFileReaderTester.cs" />
     <Compile Include="SudokuPuzzleTester.cs" />
     <Compile Include="SudokuRootTester.cs" />
     <Compile Include="SudokuSolverTester.cs" />
-    <Compile Include="UnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SudokuSolver\SudokuSolver.csproj">
@@ -67,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Empty.txt" />
+    <Content Include="output.txt" />
     <Content Include="singlePuzzle.txt" />
     <Content Include="validSudoku.txt" />
     <Content Include="WrongFile.txt" />

@@ -21,19 +21,19 @@ namespace SudokuSolverTests
         [TestMethod]
         public void NodeCanBeConstructedWithHeader()
         {
-            ColumnHeader root = new ColumnHeader();
-            Node node = new Node(root);
-            Assert.IsTrue(node.header.Equals(root));
-            Assert.AreEqual(root, node.header);
+            ColumnHeader header = new ColumnHeader();
+            Node node = new Node(header);
+            Assert.IsTrue(node.header.Equals(header));
+            Assert.AreEqual(header, node.header);
             Assert.IsTrue(node.left.Equals(node.right));
-            Assert.IsTrue(node.up.Equals(root));
-            Assert.IsTrue(node.down.Equals(root));
+            Assert.IsTrue(node.up.Equals(header));
+            Assert.IsTrue(node.down.Equals(header));
         }
         
         [TestMethod]
         public void NodeCanGetLinkedHeaders()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader headerSingle = new ColumnHeader(root);
             Node single = headerSingle.CreateNode();
             ColumnHeader headerSingleMultiRow = new ColumnHeader(root);
@@ -49,7 +49,7 @@ namespace SudokuSolverTests
         [TestMethod]
         public void NodeCanRemoveRow()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader headerSingle = new ColumnHeader(root);
             ColumnHeader otherHeader = new ColumnHeader(root);
             Node toRemove = headerSingle.CreateNode();
@@ -63,7 +63,7 @@ namespace SudokuSolverTests
         [TestMethod]
         public void RemoveRowSetsOtherHeadersHeightsCorrectly()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader headerSingle = new ColumnHeader(root);
             ColumnHeader otherHeader = new ColumnHeader(root);
             ColumnHeader otherHeader2 = new ColumnHeader(root);
@@ -86,6 +86,26 @@ namespace SudokuSolverTests
             Assert.IsTrue(headerSingle.Size == 1);
             Assert.IsTrue(otherHeader.Size == 2);
             Assert.IsTrue(otherHeader2.Size == 1);
+        }
+
+        [TestMethod]
+        public void GetLinkedHeadersReturnsAccurateHeaders()
+        {
+            HeaderRoot root = GetRoot();
+            ColumnHeader[] headers = new ColumnHeader[2];
+            Node[] nodes = new Node[2];
+            for (int i = 0; i < 2; i++)
+            {
+                headers[i] = root.CreateHeader();
+                nodes[i] = headers[i].CreateNode();
+            }
+            Node.LinkNodes(nodes);
+            Assert.IsTrue(root[0].down.GetLinkedHeaders().Count == 2);
+        }
+
+        private HeaderRoot GetRoot()
+        {
+            return new MockHeaderRoot();
         }
     }
 }

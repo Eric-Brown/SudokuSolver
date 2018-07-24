@@ -20,8 +20,9 @@ namespace SudokuSolverTests
             SudokuPuzzle unsolved2 = SudokuPuzzle.CreateFromStream(GetStreamFromFileName(GOODSINGLEPUZZLEFILE));
 
             Assert.IsFalse(unsolved.IsSolved());
-            SudokuPuzzle solved = new SudokuPuzzle("Solved1");
-            solved.PuzzleMatrix = new int[][]
+            SudokuPuzzle solved = new SudokuPuzzle("Solved1")
+            {
+                PuzzleMatrix = new int[][]
             {
                 new int[] { 4,8,3,9,2,1,6,5,7 },
                 new int[] { 9,6,7,3,4,5,8,2,1 },
@@ -32,6 +33,7 @@ namespace SudokuSolverTests
                 new int[] { 3,7,2,6,8,9,5,1,4 },
                 new int[] { 8,1,4,2,5,3,7,6,9 },
                 new int[] { 6,9,5,4,1,7,3,8,2 },
+            }
             };
             SudokuRoot totest =  new SudokuRoot();
             totest.SolveSudoku(unsolved);

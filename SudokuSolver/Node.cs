@@ -7,19 +7,16 @@ using System.Threading.Tasks;
 namespace SudokuSolver
 {
 
-    public class Node : IEquatable<Node>
+    public class Node
     {
-        private static int nextRowID = 0;
         public Node left;
         public Node right;
         public Node down;
         public Node up;
         public ColumnHeader header;
-        public readonly int rowID;
 
         public Node()
         {
-            rowID = nextRowID++;
             up = this;
             down = this;
             left = this;
@@ -29,7 +26,6 @@ namespace SudokuSolver
         public Node(ColumnHeader column)
         {
             header = column;
-            rowID = nextRowID++;
             Node last = column.up;
             column.up = this;
             up = last;
@@ -77,8 +73,10 @@ namespace SudokuSolver
 
         public List<ColumnHeader> GetLinkedHeaders()
         {
-            List<ColumnHeader> results = new List<ColumnHeader>();
-            results.Add(header);
+            List<ColumnHeader> results = new List<ColumnHeader>
+            {
+                header
+            };
             Node linked = right;
             while(linked != this)
             {
@@ -111,11 +109,6 @@ namespace SudokuSolver
                 nodes[i].right = nodes[rightIndex];
                 nodes[i].left = nodes[leftIndex];
             }
-        }
-
-        public bool Equals(Node other)
-        {
-            return other.rowID == rowID;
         }
 
         internal void Unselect()

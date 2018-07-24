@@ -46,10 +46,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColumnHeader.cs" />
+    <Compile Include="HeaderRoot.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SudokuFileReader.cs" />
+    <Compile Include="SudokuFile.cs" />
     <Compile Include="SudokuPuzzle.cs" />
     <Compile Include="SudokuRoot.cs" />
     <Compile Include="SudokuSolverHelper.cs" />

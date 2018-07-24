@@ -18,11 +18,11 @@ namespace SudokuSolverTests
         [TestMethod]
         public void ReadingBadFilesThrowsExceptions()
         {
-            Assert.ThrowsException<FileNotFoundException>(() => SudokuFileReader.ReadFile(NONEXISTANTFILENAME),
+            Assert.ThrowsException<FileNotFoundException>(() => SudokuFile.ReadFile(NONEXISTANTFILENAME),
                 "Exception expected for bad filename.");
-            Assert.ThrowsException<ArgumentException>(() => SudokuFileReader.ReadFile(EMPTYFILENAME),
+            Assert.ThrowsException<ArgumentException>(() => SudokuFile.ReadFile(EMPTYFILENAME),
                 "Exception expected for file that contains no information.");
-            Assert.ThrowsException<ArgumentException>(() => SudokuFileReader.ReadFile(WRONGFILEFORMATFILENAME),
+            Assert.ThrowsException<ArgumentException>(() => SudokuFile.ReadFile(WRONGFILEFORMATFILENAME),
                 "Exception expected for file that contains bad information.");
         }
 
@@ -31,8 +31,8 @@ namespace SudokuSolverTests
         {
             try
             {
-                SudokuFileReader.ReadFile(GOODFILENAME);
-                SudokuFileReader.ReadFile(GOODSINGLEPUZZLEFILE);
+                SudokuFile.ReadFile(GOODFILENAME);
+                SudokuFile.ReadFile(GOODSINGLEPUZZLEFILE);
             }
             catch (Exception)
             {
@@ -49,7 +49,7 @@ namespace SudokuSolverTests
 
         private static void AssertFileContainsPuzzles(string file, int expectedNumber)
         {
-            List<SudokuPuzzle> morePuzzles = SudokuFileReader.ReadFile(file);
+            List<SudokuPuzzle> morePuzzles = SudokuFile.ReadFile(file);
             Assert.AreEqual(morePuzzles.Count, expectedNumber);
         }
     }

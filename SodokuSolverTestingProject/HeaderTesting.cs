@@ -9,43 +9,46 @@ namespace SudokuSolverTests
     public class HeaderTesting
     {
         private const int EXPECTED_LENGTH = 10;
-        private const int NUM_HEADERS_FOR_KNOWN_MATRIX = 7;
-        private const int SolutionNodeCount = 3;
+
 
         [TestMethod]
         public void DefaultConstructionLoopsToSelf()
         {
-            ColumnHeader root = new ColumnHeader();
-            Assert.IsTrue(root.left.Equals(root.right));
-            Assert.IsTrue(root.down.Equals(root.up));
-            Assert.IsTrue(root.header.Equals(root));
+            ColumnHeader defaultHeader = new ColumnHeader();
+            Assert.IsTrue(defaultHeader.left.Equals(defaultHeader.right));
+            Assert.IsTrue(defaultHeader.down.Equals(defaultHeader.up));
+            Assert.IsTrue(defaultHeader.header.Equals(defaultHeader));
         }
         [TestMethod]
         public void HeaderAsConstructionParameterLinksHeadersTogether()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader next = new ColumnHeader(root);
-            Assert.IsTrue(root.Equals(next.left));
-            Assert.IsTrue(next.right.Equals(root),
-                "Next -> Right ID: " + next.right.rowID + "\nRoot ID: " + root.rowID);
+            Assert.IsTrue(root == next.left);
+            Assert.IsTrue(next.right==root);
             Assert.IsFalse(root.Equals(next.up));
             Assert.IsFalse(root.Equals(next.down));
+        }
+
+        private static HeaderRoot GetRoot()
+        {
+            return new MockHeaderRoot();
         }
 
         [TestMethod]
         public void LinkedHeadersCountedCorrectly()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeaders(root, EXPECTED_LENGTH);
-            Assert.IsTrue(root.NumLinkedHeaders == EXPECTED_LENGTH);
+            Assert.IsTrue(root.Count == EXPECTED_LENGTH);
         }
 
-        private ColumnHeader[] GetHeaders(ColumnHeader root, int numHeaders)
+        private ColumnHeader[] GetHeaders(HeaderRoot root, int numHeaders)
         {
             ColumnHeader[] newHeaders = new ColumnHeader[numHeaders];
             for (int i = 0; i < numHeaders; i++)
             {
-                newHeaders[i] = new ColumnHeader(root);
+                newHeaders[i] = root.CreateHeader();
             }
             return newHeaders;
         }
@@ -53,16 +56,16 @@ namespace SudokuSolverTests
         [TestMethod]
         public void HidingRemovesHeaderFromLinkedList()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader next = new ColumnHeader(root);
             next.Hide();
-            Assert.IsTrue(root.NumLinkedHeaders == 0);
+            Assert.IsTrue(root.Count == 0);
         }
 
         [TestMethod]
         public void UnhidingAddsHeaderToLinkedListInOriginalPosition()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeaders(root, EXPECTED_LENGTH);
             ColumnHeader toTest = GetHeaderAt(root, EXPECTED_LENGTH);
             toTest.Hide();
@@ -73,7 +76,7 @@ namespace SudokuSolverTests
         [TestMethod]
         public void UnhidingManyAddsHeaderToLinkedListInOriginalPosition()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeaders(root, EXPECTED_LENGTH);
             Random random = new Random();
             int numToHide = random.Next(0, EXPECTED_LENGTH);
@@ -108,25 +111,25 @@ namespace SudokuSolverTests
         [TestMethod]
         public void CoverWorksWithNoNodes()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeaders(root, EXPECTED_LENGTH);
             headers[0].Cover();
-            Assert.IsTrue(root.NumLinkedHeaders == EXPECTED_LENGTH - 1);
+            Assert.IsTrue(root.Count == EXPECTED_LENGTH - 1);
         }
 
         [TestMethod]
         public void UncoverWorksWithNoNodes()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeaders(root, EXPECTED_LENGTH);
             headers[0].Cover();
             headers[0].Uncover();
-            Assert.IsTrue(root.NumLinkedHeaders == EXPECTED_LENGTH);
+            Assert.IsTrue(root.Count == EXPECTED_LENGTH);
         }
         [TestMethod]
         public void UncoverRestoresRowsToOtherHeaders()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeaders(root, EXPECTED_LENGTH);
             CreateAndLinkNodesToRandomHeaders(root, EXPECTED_LENGTH/2);
             CreateAndLinkNodesToRandomHeaders(root, EXPECTED_LENGTH/2);
@@ -146,20 +149,20 @@ namespace SudokuSolverTests
         [TestMethod]
         public void CoveringAllHeadersWillLeaveRootLinkingToSelf()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeaders(root, EXPECTED_LENGTH);
             for (int i = 0; i < headers.Length; i++)
             {
                 headers[i].Cover();
             }
-            Assert.IsTrue(root.right.Equals(root));
-            Assert.IsTrue(root.left.Equals(root));
+            Assert.IsTrue(root.right == root);
+            Assert.IsTrue(root.left == root);
         }
 
         [TestMethod]
         public void NodesCanBeAddedToHeaders()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeaders(root, EXPECTED_LENGTH);
             for (int i = 0; i < headers.Length; i++)
             {
@@ -171,9 +174,9 @@ namespace SudokuSolverTests
             }
         }
 
-        private ColumnHeader GetHeaderAt(ColumnHeader root, int index)
+        private ColumnHeader GetHeaderAt(HeaderRoot root, int index)
         {
-            ColumnHeader currHeader = root;
+            ColumnHeader currHeader = root.right;
             for (int i = 0; i < index; i++)
             {
                 currHeader = currHeader.right;
@@ -184,20 +187,20 @@ namespace SudokuSolverTests
         [TestMethod]
         public void ChooseColumnWillReturnMinColumn()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeaders(root, EXPECTED_LENGTH);
             for (int i = 0; i < EXPECTED_LENGTH - 1; i++)
             {
                 headers[i].CreateNode();
             }
-            ColumnHeader chosen = ColumnHeader.ChooseColumnHeader(root);
+            ColumnHeader chosen = root.ChooseColumnHeader();
             Assert.AreEqual(headers[EXPECTED_LENGTH - 1], chosen);
         }
 
         [TestMethod]
         public void CoverWillRemoveRowsFromAllHeaders()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeadersWithLinkedNodes(root);
             headers[0].Cover();
             int summedsizes = 0;
@@ -208,7 +211,7 @@ namespace SudokuSolverTests
             Assert.IsTrue(summedsizes == 0);
         }
 
-        private ColumnHeader[] GetHeadersWithLinkedNodes(ColumnHeader root)
+        private ColumnHeader[] GetHeadersWithLinkedNodes(HeaderRoot root)
         {
             ColumnHeader[] headers = GetHeaders(root, EXPECTED_LENGTH);
             Node[] nodes = new Node[EXPECTED_LENGTH];
@@ -223,7 +226,7 @@ namespace SudokuSolverTests
         [TestMethod]
         public void CoverWillOnlyRemoveRowsFromLinkedColumns()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeaders(root, EXPECTED_LENGTH);
             Node[] nodes = new Node[EXPECTED_LENGTH / 2];
             for (int i = 0; i < EXPECTED_LENGTH; i++)
@@ -247,7 +250,7 @@ namespace SudokuSolverTests
         [TestMethod]
         public void CoverWillSetOtherHeadersHeights()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeadersWithLinkedNodes(root);
             headers[0].Cover();
             int sum = 0;
@@ -263,16 +266,16 @@ namespace SudokuSolverTests
         [TestMethod]
         public void CoverWillCorrectlySetOtherHeadersHeights()
         {
-            ColumnHeader root = new ColumnHeader();
+            HeaderRoot root = GetRoot();
             ColumnHeader[] headers = GetHeadersWithLinkedNodes(root);
+            headers[0].Cover();
             Random rand = new Random();
             int numToLinkA = rand.Next(1, EXPECTED_LENGTH - 1);
             int numToLinkB = rand.Next(1, EXPECTED_LENGTH - 1);
             //Header 0 will always only have the one linked row;
-            CreateAndLinkNodesToRandomHeaders(headers[0], numToLinkA);
-            CreateAndLinkNodesToRandomHeaders(headers[0], numToLinkB);
+            CreateAndLinkNodesToRandomHeaders(root, numToLinkA);
+            CreateAndLinkNodesToRandomHeaders(root, numToLinkB);
 
-            headers[0].Cover();
             int sum = 0;
             ColumnHeader currHeader = root.right;
             while (currHeader != root)
@@ -283,48 +286,20 @@ namespace SudokuSolverTests
             Assert.IsTrue(sum == numToLinkA + numToLinkB);
         }
 
-        [TestMethod]
-        public void CoverWillCorrectlySetOtherKnownHeadersHights()
-        {
-            ColumnHeader root = new ColumnHeader();
-            ColumnHeader[] known = GetKnownProblemHeaders(root);
-            int[] expectedRemainingSize = GetKnownProblemHeaderCoverResults();
-            for (int i = 0; i < known.Length; i++)
-            {
-                known[i].Cover();
-                int sum = 0;
-                ColumnHeader temp = root.right;
-                while (temp != root)
-                {
-                    sum += temp.Size;
-                    temp = temp.right;
-                }
-                Assert.IsTrue(sum == expectedRemainingSize[i]);
-                known[i].Uncover();
-            }
-        }
 
-        private int[] GetKnownProblemHeaderCoverResults()
-        {
-            return new int[NUM_HEADERS_FOR_KNOWN_MATRIX]
-            {
-                12,
-                11,
-                10,
-                9,
-                11,
-                10,
-                5
-            };
-        }
 
-        private void CreateAndLinkNodesToRandomHeaders(ColumnHeader root, int numToLink)
+        /// <summary>
+        /// TODO: FIX THIS
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="numToLink"></param>
+        private void CreateAndLinkNodesToRandomHeaders(HeaderRoot root, int numToLink)
         {
-            int AvailableHeaderCount = root.NumLinkedHeaders - 1;
+            int AvailableHeaderCount = root.Count;
             List<int> workingIndex = new List<int>();
             for (int i = 0; i < AvailableHeaderCount; i++)
             {
-                workingIndex.Add(i + 1);
+                workingIndex.Add(i);
             }
             Random rand = new Random();
             Node[] toLink = new Node[numToLink];
@@ -338,65 +313,9 @@ namespace SudokuSolverTests
             Node.LinkNodes(toLink);
         }
 
-        [TestMethod]
-        public void SearchWillReturnACorrectNodeSolutionStack()
-        {
-            ColumnHeader root = new ColumnHeader();
-            ColumnHeader[] headers = GetHeadersWithLinkedNodes(root);
-            Stack<Node> solution = ColumnHeader.Search(root);
-            Assert.IsTrue(solution.Count == 1);
-        }
 
-        [TestMethod]
-        public void SearchWillReturnACorrectNodeSolutionStackForComplicatedMatrix()
-        {
-            ColumnHeader root = new ColumnHeader();
-            ColumnHeader[] headers = GetKnownProblemHeaders(root);
-            Node[] solutionNodes = GetKnownProblemSolutionNodes(root);
-            Stack<Node> solutionActual = ColumnHeader.Search(root);
-            List<ColumnHeader> retrievedHeaders = new List<ColumnHeader>();
-            foreach (var solutionnode in solutionNodes)
-            {
-                retrievedHeaders.AddRange(solutionnode.GetLinkedHeaders());
-            }
-            Assert.IsTrue(retrievedHeaders.Count == root.NumLinkedHeaders);
-            Assert.IsTrue(solutionActual.Count == solutionNodes.Length);
-            foreach (Node expected in solutionNodes)
-            {
-                Assert.IsTrue(solutionActual.Contains(expected));
-            }
 
-        }
 
-        private Node[] GetKnownProblemSolutionNodes(ColumnHeader root)
-        {
-            Node[] solutionSet = new Node[SolutionNodeCount];
-            solutionSet[0] = GetHeaderAt(root, 1).down.down;
-            solutionSet[1] = GetHeaderAt(root, 5).down.down;
-            solutionSet[2] = GetHeaderAt(root, 2).down.down;
-            return solutionSet;
-        }
 
-        private ColumnHeader[] GetKnownProblemHeaders(ColumnHeader root)
-        {
-            ColumnHeader[] headers = GetHeaders(root, NUM_HEADERS_FOR_KNOWN_MATRIX);
-            CreateRowForHeaders(root, 1, 4, 7);
-            CreateRowForHeaders(root, 1, 4);
-            CreateRowForHeaders(root, 4, 5, 7);
-            CreateRowForHeaders(root, 3, 5, 6);
-            CreateRowForHeaders(root, 2, 3, 6, 7);
-            CreateRowForHeaders(root, 2, 7);
-            return headers;
-        }
-
-        private void CreateRowForHeaders(ColumnHeader root, params int[] headerIndexes)
-        {
-            Node[] toLink = new Node[headerIndexes.Length];
-            for (int i = 0; i < headerIndexes.Length; i++)
-            {
-                toLink[i] = GetHeaderAt(root, headerIndexes[i]).CreateNode();
-            }
-            Node.LinkNodes(toLink);
-        }
     }
 }

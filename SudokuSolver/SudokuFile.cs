@@ -4,7 +4,7 @@ using System.IO;
 
 namespace SudokuSolver
 {
-    public static class SudokuFileReader
+    public static class SudokuFile
     {
         private const string BAD_FILE_ERRMSG = "Given filename is either empty or cannot be read as a sudoku puzzle.";
 
@@ -24,5 +24,22 @@ namespace SudokuSolver
             }
             return puzzles;
         }
+
+        public static void SaveFile(List<SudokuPuzzle> puzzles, string fileName)
+        {
+            using (StreamWriter stream = new StreamWriter(new BufferedStream(File.OpenWrite(fileName))))
+            {
+                OutputToStream(puzzles, stream);
+            }
+        }
+        public static void OutputToStream(List<SudokuPuzzle> puzzles, TextWriter stream)
+        {
+
+                foreach (var puzzle in puzzles)
+                {
+                    puzzle.WriteToStream(stream);
+                }
+        }
+
     }
 }

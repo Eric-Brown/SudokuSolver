@@ -24,8 +24,9 @@ namespace SudokuSolverTests
         [TestMethod]
         public void CreatedPuzzlesAreCorrect()
         {
-            SudokuPuzzle expected = new SudokuPuzzle("Grid 01");
-            expected.PuzzleMatrix = new int[][]
+            SudokuPuzzle expected = new SudokuPuzzle("Grid 01")
+            {
+                PuzzleMatrix = new int[][]
             {
                 new int[] { 0,0,3,0,2,0,6,0,0 },
                 new int[] { 9,0,0,3,0,5,0,0,1 },
@@ -36,6 +37,7 @@ namespace SudokuSolverTests
                 new int[] { 0,0,2,6,0,9,5,0,0 },
                 new int[] { 8,0,0,2,0,3,0,0,9 },
                 new int[] { 0,0,5,0,1,0,3,0,0 },
+            }
             };
             SudokuPuzzle actual = SudokuPuzzle.CreateFromStream(GetStreamFromFileName(GOODSINGLEPUZZLEFILE));
 
@@ -52,8 +54,9 @@ namespace SudokuSolverTests
         {
             SudokuPuzzle unsolved = SudokuPuzzle.CreateFromStream(GetStreamFromFileName(GOODSINGLEPUZZLEFILE));
             Assert.IsFalse(unsolved.IsSolved());
-            SudokuPuzzle solved = new SudokuPuzzle("Solved1");
-            solved.PuzzleMatrix = new int[][]
+            SudokuPuzzle solved = new SudokuPuzzle("Solved1")
+            {
+                PuzzleMatrix = new int[][]
             {
                 new int[] { 4,8,3,9,2,1,6,5,7 },
                 new int[] { 9,6,7,3,4,5,8,2,1 },
@@ -64,6 +67,7 @@ namespace SudokuSolverTests
                 new int[] { 3,7,2,6,8,9,5,1,4 },
                 new int[] { 8,1,4,2,5,3,7,6,9 },
                 new int[] { 6,9,5,4,1,7,3,8,2 },
+            }
             };
             Assert.IsTrue(solved.IsSolved());
         }
