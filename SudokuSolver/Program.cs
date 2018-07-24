@@ -44,6 +44,12 @@ namespace SudokuSolver
                 else
                 {
                     SudokuFile.OutputToStream(puzzles, System.Console.Out);
+                    long sum = 0;
+                    foreach (var puzzle in puzzles)
+                    {
+                        sum += puzzle.PuzzleMatrix[0][0] * 100 + puzzle.PuzzleMatrix[0][1] * 10 + puzzle.PuzzleMatrix[0][2];
+                    }
+                    System.Console.WriteLine(sum);
                 }
             }
             catch (System.ArgumentException ex)
